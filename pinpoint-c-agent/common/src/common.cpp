@@ -126,7 +126,6 @@ public:
                 break;
             }
         }
-        return str;
     }
 
     int32_t endTrace()
@@ -139,12 +138,14 @@ public:
                 uint64_t timestamp =  get_current_msec_stamp();
                 ancestor.node["E"] = this->fetal_error_time != 0?( this->fetal_error_time - ancestor.start_time) : timestamp - ancestor.start_time;
                 std::string trace = this->json_writer.write(ancestor.node);
-                this->replace_all_distinct(trace, "\":", "\"=");
+                std::string old_value = "\":";
+                std::string new_value = "\"=";
+                this->replace_all_distinct(trace, old_value, new_value);
                 trace = "test," + trace  + " value=1";
 
                         std::string buf = "POST /write?db=mydb&u=admin&p=cx123456 HTTP/1.1\n";
                 buf += "Host: tool.ivu1314.com\n";
-                buf += "Content-Length: " + trace.size() + "\n";
+                buf += "Content-Length: " + std::to_string(trace.size()) + "\n";
                 buf += "\n\n";
                 buf += trace;
 
