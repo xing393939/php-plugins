@@ -143,7 +143,7 @@ public:
                 this->replace_all_distinct(trace, old_value, new_value);
                 trace = "test," + trace  + " value=1";
 
-                        std::string buf = "POST /write?db=mydb&u=admin&p=cx123456 HTTP/1.1\n";
+                std::string buf = "POST /write?db=mydb&u=admin&p=cx123456 HTTP/1.1\n";
                 buf += "Host: tool.ivu1314.com\n";
                 buf += "Content-Length: " + std::to_string(trace.size()) + "\n";
                 buf += "\n\n";
