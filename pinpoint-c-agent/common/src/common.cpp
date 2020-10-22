@@ -118,6 +118,8 @@ public:
 
     void replace_all_distinct(std::string &str, std::string &old_value, std::string &new_value)
     {
+        str = str.substr(0, str.length() - 1);
+        str = str.substr(1);
         for(std::string::size_type pos(0); pos!=std::string::npos; pos+=new_value.length())
         {
             if ((pos=str.find(old_value, pos)) != std::string::npos) {
