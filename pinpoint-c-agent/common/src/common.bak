@@ -116,20 +116,6 @@ public:
         }
     }
 
-    void replace_all_distinct(std::string &str, std::string &old_value, std::string &new_value)
-    {
-        str = str.substr(0, str.length() - 1);
-        str = str.substr(1);
-        for(std::string::size_type pos(0); pos!=std::string::npos; pos+=new_value.length())
-        {
-            if ((pos=str.find(old_value, pos)) != std::string::npos) {
-                str.replace(pos, old_value.length(), new_value);
-            } else  {
-                break;
-            }
-        }
-    }
-
     int32_t endTrace()
     {
         if( this->stack.size() == 1 ) // ancestor node
@@ -140,16 +126,11 @@ public:
                 uint64_t timestamp =  get_current_msec_stamp();
                 ancestor.node["E"] = this->fetal_error_time != 0?( this->fetal_error_time - ancestor.start_time) : timestamp - ancestor.start_time;
                 std::string trace = this->json_writer.write(ancestor.node);
-                std::string old_value = "\":";
-                std::string new_value = "\"=";
-                this->replace_all_distinct(trace, old_value, new_value);
-                trace = "test," + trace  + " value=1";
+                Header header;
+                header.length  = htonl(trace.size());
+                header.type    = htonl(REQ_UPDATE_SPAN);
 
-                std::string buf = "POST /write?db=mydb&u=admin&p=cx123456 HTTP/1.1\n";
-                buf += "Host: tool.ivu1314.com\n";
-                buf += "Content-Type: application/x-www-form-urlencoded\n";
-                buf += "Content-Length: " + std::to_string(trace.size()) + "\n";
-                buf += "\n";
+                std::string buf((char*)&header,sizeof(header));
                 buf += trace;
 
                 this->translayer.sendMsgToAgent(buf);
